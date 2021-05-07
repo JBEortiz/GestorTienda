@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-@RestControllerAdvice(basePackages = "com.app.user.erureka.controller")
+@RestControllerAdvice(basePackages = "com.app.gestion.controller")
 public class ConrtollerExceptionHandler{
 	
 	@ResponseStatus(HttpStatus.NOT_FOUND)

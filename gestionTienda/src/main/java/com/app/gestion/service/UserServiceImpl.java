@@ -51,12 +51,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Users update(Users product, Long id) {
-		Users productUpdate = repository.findById(id).orElseGet(() -> new Users());
-		if (productUpdate != null) {
-			productUpdate.setName(product.getName());
+	public Users update(Users user, Long id) {
+		Users userUpdate = repository.findById(id).orElseGet(() -> new Users());
+		if (userUpdate != null) {
+			userUpdate.setName(user.getName());
+			userUpdate.setDirection(Utils.validateEmail(user.getDirection()) );
+			
+			
 		}
-		return repository.save(productUpdate);
+		return repository.save(userUpdate);
 
 	}
 
@@ -75,8 +78,8 @@ public class UserServiceImpl implements UserService {
 	public Users buyProduct(Long idUser, Long idProduct, int amount) {
 		String details = "";
 		Double calculateTotal = 0.0;
-		Users user = repository.findById(idUser).orElseGet(() -> new Users());
-		Inventory inventory = inventoryRepository.findById(idProduct).orElseGet(() -> new Inventory());
+		Users user = repository.findById(idUser).orElseGet(() -> null);
+		Inventory inventory = inventoryRepository.findById(idProduct).orElseGet(() -> null);
 		Boolean tieneProducto = false;
 		Product product = new Product();
 		if (inventory != null) {

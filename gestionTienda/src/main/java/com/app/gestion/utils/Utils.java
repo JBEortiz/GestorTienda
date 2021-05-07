@@ -1,6 +1,7 @@
 package com.app.gestion.utils;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 public class Utils {
 	
@@ -19,5 +20,17 @@ public class Utils {
 		}
 		return  "Hemos recargado : " + amount + " Producto: " + name + "Fecha de recarga: "
 				+ LocalDate.now();
+	}
+	
+	public static String validateEmail(String direction) {
+		
+		String regexp="^[^@]+@[^@]+\\.[a-zA-Z]{2,}$";
+		
+		if(Pattern.matches(regexp, direction)) {
+			return direction;
+		}else {
+			return "direccion por modificar no validada";
+		}
+		
 	}
 }

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.app.gestion.entity.Inventory;
+import com.app.gestion.mapper.InventoryMapper;
 import com.app.gestion.service.InventoryService;
 
 @RestController
@@ -20,6 +22,8 @@ public class InventoryController {
 
 	@Autowired
 	private InventoryService service;
+	
+	private InventoryMapper mapper;
 	
 	@GetMapping("/inventory/{id}")
 	public ResponseEntity<Inventory> findById(@PathVariable Long id) {

@@ -4,11 +4,14 @@ import java.util.List;
 
 import com.app.gestion.entity.Rol;
 
-public class UsersDTO {
+import lombok.Getter;
+import lombok.Setter;
+@Getter
+@Setter
+public class UsersDto {
 
 	private String username;
 	private String password;
-	private Boolean enabled;
 	private String name;
 	private String lastname;
 	private String direction;
