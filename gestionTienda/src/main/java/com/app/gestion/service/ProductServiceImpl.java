@@ -3,6 +3,8 @@ package com.app.gestion.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	@Transactional(readOnly = true)
 	public Product findById(Long id) {
-		return repository.findById(id).orElse(new Product());
+		return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	@Transactional
 	public Product update(Product product, Long id) {
-		Product productUpdate = repository.findById(id).orElse(new Product());
+		Product productUpdate = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		if (productUpdate != null) {
 			productUpdate.setName(product.getName());
 			productUpdate.setPrice(product.getPrice());

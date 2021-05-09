@@ -37,10 +37,7 @@ public class ProductController {
 	
 	@GetMapping("/listar/{id}")
 	public ResponseEntity<Product> findById(@PathVariable Long id) {
-		Product product = null;
-		if (service.findById(id) == null) {
-			new EntityNotFoundException("id no encontrado");
-		}
+		Product product;
 		product = service.findById(id);
 		return ResponseEntity.ok(product);
 	}

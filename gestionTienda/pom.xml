@@ -15,14 +15,32 @@
 	<name>gestionTienda</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>1.8</java.version>
-		<org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
+		<spring-cloud.version>2020.0.2</spring-cloud.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
+		<spring.version>5.2.9.RELEASE</spring.version>
+		<lombok.version>1.18.12</lombok.version>
+		<junit.version>5.7.0</junit.version>
+		<mapstruct.version>1.4.2.Final</mapstruct.version>
+		<swagger.version>2.9.2</swagger.version>
 	</properties>
 	<dependencies>
+	<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${org.mapstruct.version}</version>
+			<version>${mapstruct.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -59,6 +77,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -67,20 +89,31 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
+					<source>1.8</source>
+					<target>1.8</target>
+					<annotationProcessorPaths>
+						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-					<annotationProcessorPaths>
+							<version>${lombok.version}</version>
+						</path>
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
-							<version>${org.mapstruct.version}</version>
+							<version>${mapstruct.version}</version>
 						</path>
-						<!-- other annotation processors -->
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
+						</path>
 					</annotationProcessorPaths>
+					<compilerArgs>
+						<compilerArg>
+							-Amapstruct.defaultComponentModel=spring
+						</compilerArg>
+					</compilerArgs>
+					<generatedSourcesDirectory>${project.build.directory}/generated-sources</generatedSourcesDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

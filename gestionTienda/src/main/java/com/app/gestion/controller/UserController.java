@@ -44,11 +44,7 @@ public class UserController {
 
 	@GetMapping("/users/{id}")
 	public ResponseEntity<Users> findById(@PathVariable Long id) {
-
-		Users user = null;
-		if (service.findById(id) == null) {
-			new EntityNotFoundException("id no encontrado");
-		}
+		Users user;
 		user = service.findById(id);
 		return ResponseEntity.ok(user);
 
@@ -56,10 +52,7 @@ public class UserController {
 
 	@GetMapping("/user/{username}")
 	public ResponseEntity<Users> findById(@PathVariable String username) {
-		Users user = null;
-		if (service.findByUsername(username) == null) {
-			new EntityNotFoundException("username no encontrado");
-		}
+		Users user ;
 		user = service.findByUsername(username);
 		return ResponseEntity.ok(user);
 	}

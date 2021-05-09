@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,25 +12,26 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.gestion.dto.InventoryDTO;
 import com.app.gestion.entity.Inventory;
 import com.app.gestion.mapper.InventoryMapper;
 import com.app.gestion.service.InventoryService;
 
+import lombok.RequiredArgsConstructor;
+@RequiredArgsConstructor
 @RestController
 public class InventoryController {
 
-	@Autowired
-	private InventoryService service;
+	private final InventoryService service;
 	
-	private InventoryMapper mapper;
+	private  InventoryMapper mapper;
 	
 	@GetMapping("/inventory/{id}")
 	public ResponseEntity<Inventory> findById(@PathVariable Long id) {
-		Inventory inventory = null;
-		if (service.findById(id) == null) {
-			new EntityNotFoundException("id no encontrado");
-		}
+		Inventory inventory;
+		//InventoryDTO inventoryDTO= new InventoryDTO();
 		inventory = service.findById(id);
+		//inventoryDTO=mapper.entityToDto(inventory);
 		return ResponseEntity.ok(inventory);
 	}
 	

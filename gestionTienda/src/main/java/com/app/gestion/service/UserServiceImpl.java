@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public Users findById(Long id) {
-		return repository.findById(id).orElseGet(() -> new Users());
+		return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional(readOnly = true)
 	public Users update(Users user, Long id) {
-		Users userUpdate = repository.findById(id).orElseGet(() -> new Users());
+		Users userUpdate = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		if (userUpdate != null) {
 			userUpdate.setName(user.getName());
 			userUpdate.setDirection(Utils.validateEmail(user.getDirection()) );
@@ -78,8 +80,8 @@ public class UserServiceImpl implements UserService {
 	public Users buyProduct(Long idUser, Long idProduct, int amount) {
 		String details = "";
 		Double calculateTotal = 0.0;
-		Users user = repository.findById(idUser).orElseGet(() -> null);
-		Inventory inventory = inventoryRepository.findById(idProduct).orElseGet(() -> null);
+		Users user = repository.findById(idUser).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
+		Inventory inventory = inventoryRepository.findById(idProduct).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		Boolean tieneProducto = false;
 		Product product = new Product();
 		if (inventory != null) {
@@ -97,14 +99,15 @@ public class UserServiceImpl implements UserService {
 			}
 			if (!tieneProducto) {
 
-				List<Detail> detailsList = new ArrayList<>();
-				detailsList = inventory.getDetails();
+				
 				int amountActual = inventory.getAmount();
 				int userAmountActual = user.getAmountProduct();
 				if (amount < 0) {
 					amount = 0;
 				}
 				if (inventory.getAmount() < amount) {
+					List<Detail> detailsList = new ArrayList<>();
+					detailsList = inventory.getDetails();
 					Detail detail1 = new Detail();
 					amount = inventory.getAmount();
 					calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
@@ -119,6 +122,8 @@ public class UserServiceImpl implements UserService {
 					product = inventory.getProduct();
 					inventory.setTotal(inventory.getTotal() - calculateTotal);
 				} else {
+					List<Detail> detailsList = new ArrayList<>();
+					detailsList = inventory.getDetails();
 					Detail detail = new Detail();
 
 					calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
@@ -151,8 +156,8 @@ public class UserServiceImpl implements UserService {
 	public Users revertProduct(Long idUser, Long idProduct, int amount) {
 
 		Double calculateTotal = 0.0;
-		Users user = repository.findById(idProduct).orElseGet(() -> new Users());
-		Inventory inventory = inventoryRepository.findById(idProduct).orElseGet(() -> new Inventory());
+		Users user = repository.findById(idProduct).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
+		Inventory inventory = inventoryRepository.findById(idProduct).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		int amountTotal = 0;
 		int cantidadNoDevuelta = 0;
 		List<Product> listProduct = new ArrayList<>();

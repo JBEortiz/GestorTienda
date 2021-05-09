@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class InventoryServiceImp implements InventoryService {
 	@Override
 	@Transactional(readOnly = true)
 	public Inventory findById(Long id) {
-		return repository.findById(id).orElseGet(() -> new Inventory());
+		return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class InventoryServiceImp implements InventoryService {
 	@Transactional
 	public Inventory addAmount(int amount, Long id) {
 		String details = "";
-		Inventory inventory = repository.findById(id).orElseGet(() -> new Inventory());
+		Inventory inventory = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		List<Detail> detailsList = new ArrayList<>();
 		detailsList = inventory.getDetails();
 		Product product = inventory.getProduct();
@@ -82,8 +84,8 @@ public class InventoryServiceImp implements InventoryService {
 	@Transactional
 	public Inventory addProduct(Long id, Long idProduct, Integer amount) {
 
-		Product product = productRepository.findById(idProduct).orElseGet(() -> new Product());
-		Inventory inventory = repository.findById(id).orElseGet(() -> new Inventory());
+		Product product = productRepository.findById(idProduct).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
+		Inventory inventory = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
 		Double calculateTotal = (inventory.getAmount() + amount) * product.getPrice();
 		int amountTotalGuardar=inventory.getAmount()+amount;
 		if (inventory.getProduct() == null) {
