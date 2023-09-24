@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 	public Users buyProduct(Long idUser, Long idProduct, int amount) {
 		Users user = getUserById(idUser);
 		Inventory inventory = getInventoryById(idProduct);
-		Double calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
+		Double totalCalculation = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
 		String details = generatePurchaseDetails(inventory, amount, totalCalculation);
 		boolean userHasTheProduct=hasProduct(user, inventory.getProduct());
 		if (!userHasTheProduct) {
