@@ -78,76 +78,77 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public Users buyProduct(Long idUser, Long idProduct, int amount) {
-		Users user = getUserById(idUser);
-		Inventory inventory = getInventoryById(idProduct);
-		Double totalCalculation = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
-		String details = generatePurchaseDetails(inventory, amount, totalCalculation);
-		boolean userHasTheProduct=hasProduct(user, inventory.getProduct());
-		if (!userHasTheProduct) {
-			handleProductPurchase(user, inventory, amount, totalCalculation, details);
-		}
-		if (userHasTheProduct){
-			handleExistingProductPurchase(user, inventory, amount, totalCalculation);
+		String details = "";
+		Double calculateTotal = 0.0;
+		Users user = repository.findById(idUser).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
+		Inventory inventory = inventoryRepository.findById(idProduct).orElseThrow(() -> new EntityNotFoundException("id no encontrado"));
+		Boolean tieneProducto = false;
+		Product product = new Product();
+		if (inventory != null) {
+			List<Product> listProduct = new ArrayList<>();
+			if (user.getProducts() != null) {
+				listProduct = user.getProducts();
+			}
+			for (Product productUser : listProduct) {
+				if (productUser.getId() != inventory.getProduct().getId()) {
+					product = inventory.getProduct();
+					tieneProducto = false;
+				} else {
+					tieneProducto = true;
+				}
+			}
+			if (!tieneProducto) {
+
+				
+				int amountActual = inventory.getAmount();
+				int userAmountActual = user.getAmountProduct();
+				if (amount < 0) {
+					amount = 0;
+				}
+				if (inventory.getAmount() < amount) {
+					List<Detail> detailsList = new ArrayList<>();
+					detailsList = inventory.getDetails();
+					Detail detail1 = new Detail();
+					amount = inventory.getAmount();
+					calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
+					details = "Dinero movido: " + calculateTotal + " Cantidad: " + amount + " Producto: "
+							+ inventory.getProduct().getName() + "Fecha de agotamiento: " + LocalDate.now();
+					int totalByus = user.getAmountProduct() + amount;
+					detail1.setDescription(details);
+					detailsList.add(detail1);
+					inventory.setDetails(detailsList);
+					user.setAmountProduct(totalByus);
+					inventory.setAmount(0);
+					product = inventory.getProduct();
+					inventory.setTotal(inventory.getTotal() - calculateTotal);
+				} else {
+					List<Detail> detailsList = new ArrayList<>();
+					detailsList = inventory.getDetails();
+					Detail detail = new Detail();
+
+					calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
+					details = "Dinero movido: " + calculateTotal + " Cantidad: " + amount + " Producto: "
+							+ inventory.getProduct().getName() + "Fecha de compra: " + LocalDate.now();
+					user.setAmountProduct(userAmountActual + amount);
+					detail.setDescription(details);
+					detailsList.add(detail);
+					inventory.setDetails(detailsList);
+					inventory.setAmount(amountActual - amount);
+					inventory.setTotal(inventory.getTotal() - calculateTotal);
+					product = inventory.getProduct();
+				}
+
+				listProduct.add(product);
+				user.setProducts(listProduct);
+			} else {
+				calculateTotal = Utils.calculateTotalPurchase(amount, inventory.getProduct().getPrice());
+				user.setAmountProduct(user.getAmountProduct() + amount);
+				inventory.setAmount(inventory.getAmount() - amount);
+				inventory.setTotal(inventory.getTotal() - calculateTotal);
+			}
 		}
 
 		return user;
-	}
-
-	private Users getUserById(Long idUser) {
-		return repository.findById(idUser)
-				.orElseThrow(() -> new EntityNotFoundException("User not found"));
-	}
-
-	private Inventory getInventoryById(Long idProduct) {
-		return inventoryRepository.findById(idProduct)
-				.orElseThrow(() -> new EntityNotFoundException("Inventory not found"));
-	}
-
-	private String generatePurchaseDetails(Inventory inventory, int amount, Double totalCalculation) {
-		String dateInfo = (inventory.getAmount() < amount) ? "Out of stock date" : " Date of purchase";
-		return "Money moved: " + totalCalculation + " Amount: " + amount + " Product: "
-				+ inventory.getProduct().getName() + dateInfo + " " + LocalDate.now();
-	}
-
-	private boolean hasProduct(Users user, Product product) {
-		return user.getProducts() != null && user.getProducts().stream()
-				.anyMatch(productUser -> productUser.getId().equals(product.getId()));
-	}
-
-	private void handleProductPurchase(Users user, Inventory inventory, int amount, Double totalCalculation, String details) {
-		int amountActual = inventory.getAmount();
-		int userAmountActual = user.getAmountProduct();
-
-		if (amount < 0) {
-			amount = 0;
-		}
-
-		if (inventory.getAmount() < amount) {
-			List<Detail> detailsList = new ArrayList<>();
-			detailsList = inventory.getDetails();
-			Detail detail1 = new Detail();
-			amount = inventory.getAmount();
-			int totalByus = user.getAmountProduct() + amount;
-			detail1.setDescription(details);
-			detailsList.add(detail1);
-			inventory.setDetails(detailsList);
-			user.setAmountProduct(totalByus);
-			inventory.setAmount(0);
-			inventory.setTotal(inventory.getTotal() - calculateTotal);
-		} else {
-			List<Detail> detailsList = new ArrayList<>();
-			detailsList = inventory.getDetails();
-			Detail detail = new Detail();
-			detail.setDescription(details);
-			detailsList.add(detail);
-			inventory.setDetails(detailsList);
-			inventory.setAmount(amountActual - amount);
-			inventory.setTotal(inventory.getTotal() - calculateTotal);
-		}
-
-		List<Product> listProduct = new ArrayList<>(user.getProducts());
-		listProduct.add(inventory.getProduct());
-		user.setProducts(listProduct);
 	}
 
 
